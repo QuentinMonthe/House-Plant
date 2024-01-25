@@ -1,0 +1,26 @@
+# node.js
+#
+houseplant_ui/node_modules/
+houseplant_ui/npm-debug.log
+houseplant_ui/yarn-error.log
+
+# Python
+*.pyc
+*~
+__pycache__
+
+# Env
+.venv/
+.env
+
+# Base de donnée
+db.sqlite3
+
+# Dossier "static" à la racine du projet
+houseplant_api/static/
+
+
+# Visual Studio
+.vscode/
+.history/
+*.code-workspace
