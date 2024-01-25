@@ -1,7 +1,9 @@
 from django.db import transaction
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from django.utils import timezone
 from rest_framework import mixins, status, viewsets
+from rest_framework.authtoken.admin import User
+from rest_framework.generics import UpdateAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
@@ -9,15 +11,6 @@ from plant_manage.models import Plant, Watering
 from plant_manage.serializers import PlantDetailSerializer, PlantListSerializer, WateringSerializer
 
 # Create your views here.
-
-
-class CustomModelViewSet(mixins.UpdateModelMixin,
-                         mixins.ListModelMixin, viewsets.GenericViewSet):
-    """
-    A viewset that provides default `create()`, `update()`,
-    `partial_update()` and `list()` actions.
-    """
-    pass
 
 
 class PlantViewSet(viewsets.ModelViewSet):
@@ -69,13 +62,19 @@ class PlantViewSet(viewsets.ModelViewSet):
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
+    def list(self, request, *args, **kwargs):
+        queryset = Plant.objects.filter(user=request.user)
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
 
-class WateringViewSet(CustomModelViewSet):
+
+class WateringViewSet(mixins.UpdateModelMixin, viewsets.GenericViewSet):
 
     queryset = Watering.objects.all()
     serializer_class = WateringSerializer
     permission_classes = (IsAuthenticated, )
 
+    @transaction.atomic
     def update(self, request, *args, **kwargs):
         partial = kwargs.pop('partial', False)
         instance = self.get_object()
@@ -89,14 +88,16 @@ class WateringViewSet(CustomModelViewSet):
             # forcibly invalidate the prefetch cache on the instance.
             instance._prefetched_objects_cache = {}
 
-        # On recurpere l'instance de plante associe
-        data = Plant.objects.get(code=serializer.data['plant'])
+        # Si l'arrosage est pointe comme effectue on cree le prochain rappel
+        if serializer.data['is_valid'] is True:
+            # On recurpere l'instance de plante associe
+            data = Plant.objects.get(code=serializer.data['plant'])
 
-        # On definie la date prevue pour l'arrosage de cette plante
-        date_due = timezone.now() + data.watering_frequency
+            # On definie la date prevue pour l'arrosage de cette plante
+            date_due = timezone.now() + data.watering_frequency
 
-        # Creation du premier point d'arrosage
-        Watering.objects.create(
-            is_valid=False, date_planned=date_due, plant=data)
+            # Creation du premier point d'arrosage
+            Watering.objects.create(
+                is_valid=False, date_planned=date_due, plant=data)
 
         return Response(serializer.data)

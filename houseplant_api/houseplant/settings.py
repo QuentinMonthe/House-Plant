@@ -65,6 +65,7 @@ SITE_ID = 1
 
 # Configuration de l'utilisation de JSON Web Token avec dj-rest-auth
 REST_AUTH = {
+    # 'SESSION_LOGIN': True,
     'USE_JWT': True,
     'JWT_AUTH_COOKIE': 'jwt-access-token',
     'JWT_AUTH_REFRESH_COOKIE': 'jwt-refresh-token',
@@ -87,6 +88,9 @@ REST_FRAMEWORK = {
         'dj_rest_auth.jwt_auth.JWTCookieAuthentication'
     ),
     'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema',
+    # 'DEFAULT_PERMISSION_CLASSES': [
+    #     'rest_framework.permissions.IsAuthenticated'
+    # ],
 }
 
 MIDDLEWARE = [
@@ -177,9 +181,12 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Configuration du cors origin pour l'acces inter domaine
-CORS_ALLOWED_ORIGINS = [
-    'http://localhost:3000'
-]
+# CORS_ALLOWED_ORIGINS = [
+#     'http://localhost:3000'
+# ]
+# CORS_ALLOW_ALL_ORIGINS = True
+CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOWED_CREDENTIALS = True
 
 # Configuration du swagger pour gerer le login avec la session Django
 SWAGGER_SETTINGS = {

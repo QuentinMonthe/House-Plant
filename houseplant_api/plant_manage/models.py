@@ -27,6 +27,13 @@ class Plant(models.Model):
     def __str__(self):
         return self.code
 
+    # Un atribut permettant d'identifier directement le date du prochain entretien de la plantem sans besoinde consulter son detail
+    @property
+    def next_watering(self):
+        queryset = Watering.objects.filter(plant=self, is_valid=False).first()
+        print(queryset.date_planned)
+        return queryset.date_planned
+
 
 class Watering(models.Model):
 

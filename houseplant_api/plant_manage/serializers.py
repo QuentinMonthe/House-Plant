@@ -7,7 +7,8 @@ class PlantDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Plant
-        fields = '__all__'
+        fields = ('code', 'name', 'species', 'date_purchase',
+                  'image', 'watering_frequency', 'water_requirement', 'user', 'next_watering')
 
 
 class WateringSerializer(serializers.ModelSerializer):
