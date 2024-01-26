@@ -19,40 +19,23 @@ L'ensemble des dépendances utilisés sont référencé dans le fichier `package
 
 - SE : Ubuntu 22.04.2 LTS
 - IDE : VS Code
+- Base de donnée : SQL Lite
+- Langage : Python 3.10.12
+- Framework : Django Rest Framework
 - Gestionnaire de donnée : Redux + Local storage
 - Langage : JavaScript
 - Framework : Vite + React
 
-### Installation
+### Instructions
 
-Etapes d'intallation de quelques outils du projet
+Le projet est repqrtie en deux dossier contenant respective le code source du frontend et de l'API backend
 
-- Installation de l'environnement `Node JS` via `nvm`
-
-        $ curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh
-        $ curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
-        $ source ~/.bashrc
-
-        $ nvm list-remote
-        $ nvm install v16.19.0
+- houseplant_ui
+- houseplant_api
 
 ### Démarrage
 
-- Installation des dependances du projet (l'une ou l'autre des commandes ci-dessous)
-
-        $ npm install
-
-- Demarrer le serveur React :
-
-        $ npm run dev
-
-- Exécuter les tests runners :
-
-        $ npm test
-
-- Build le projet pour sa mise en production :
-
-        $ npm run build
+Les instructions nécessaires au démarrage de l'application sont contenu dans les README de chaque dossier.
 
 ## Contributeur
 
