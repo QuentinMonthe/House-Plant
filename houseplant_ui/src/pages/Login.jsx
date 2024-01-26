@@ -1,8 +1,16 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { login } from "../services/auth.services";
 
 const Login = () => {
-  const { username, setUsername } = useState(null);
-  const { password, setPassword } = useState(null);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { loading, accessToken, error, success } = useSelector(
+    (state) => state.user
+  );
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
 
   const handleUsername = (value) => {
     setUsername(value);
@@ -11,6 +19,22 @@ const Login = () => {
   const handlePassword = (value) => {
     setPassword(value);
   };
+
+  const handleLogin = () => {
+    const data = {
+      username: username,
+      password: password,
+    };
+
+    dispatch(login({ data: data }));
+  };
+
+  useEffect(() => {
+    // Redirection vers la page d'accueil si success
+    if (!loading && success && accessToken) {
+      navigate("/home");
+    }
+  }, [accessToken, loading, navigate, success]);
 
   return (
     <div className="flex max-md:flex-col w-full items-center">
@@ -24,6 +48,14 @@ const Login = () => {
         className="w-full md:w-1/2 mx-4 flex flex-col items-center"
       >
         <h2 className="mb-6">Bienvenue sur My House Plant</h2>
+
+        {error ? (
+          <p>
+            Une erreur est survenue pendant l&lsquo;opération. Veuillez vérifier
+            vos informations
+          </p>
+        ) : null}
+
         <div className="w-full max-md:max-w-md flex flex-col items-start my-4">
           <label
             htmlFor="username"
@@ -63,7 +95,8 @@ const Login = () => {
         </div>
         <div className="w-full max-md:max-w-md mt-6">
           <button
-            type="submit"
+            type="button"
+            onClick={() => handleLogin()}
             className="!w-full bg-purple-blue border-none py-3 text-white"
           >
             Se connecter

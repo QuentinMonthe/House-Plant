@@ -7,10 +7,12 @@ const Error = () => {
   return (
     <div id="error-page">
       <h1>Oops!</h1>
-      <p className="my-6">Sorry, an unexpected error has occurred.</p>
+      <p className="my-6">
+        Désolé, une erreur est survenue durqnt le processus.
+      </p>
 
       <button>
-        <a href="/login">Retour a l&apos;accueil</a>
+        <a href="/home">Retour a l&apos;accueil</a>
       </button>
     </div>
   );

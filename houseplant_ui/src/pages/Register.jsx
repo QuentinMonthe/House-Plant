@@ -1,17 +1,18 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { register } from "../services/auth.services";
+import { useNavigate } from "react-router-dom";
 
 const Register = () => {
-  const { username, setUsername } = useState(null);
-  const { email, setEmail } = useState(null);
-  const { password1, setPassword1 } = useState(null);
-  const { password2, setPassword2 } = useState(null);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { loading, error, success } = useSelector((state) => state.user);
+  const [username, setUsername] = useState("");
+  const [password1, setPassword1] = useState("");
+  const [password2, setPassword2] = useState("");
 
   const handleUsername = (value) => {
     setUsername(value);
-  };
-
-  const handleEmail = (value) => {
-    setEmail(value);
   };
 
   const handlePassword1 = (value) => {
@@ -21,6 +22,23 @@ const Register = () => {
   const handlePassword2 = (value) => {
     setPassword2(value);
   };
+
+  const handleLogin = () => {
+    const data = {
+      username: username,
+      password1: password1,
+      password2: password2,
+    };
+
+    dispatch(register({ data: data }));
+  };
+
+  useEffect(() => {
+    // redirect user to login page if registration was successful
+    if (!loading && success) {
+      navigate("/login");
+    }
+  }, [loading, navigate, success]);
 
   return (
     <div className="flex max-md:flex-col w-full">
@@ -34,6 +52,13 @@ const Register = () => {
         className="w-full md:w-1/2 mx-4 flex flex-col items-center"
       >
         <h2 className="mb-6">Création de compte</h2>
+
+        {error ? (
+          <p>
+            Une erreur est survenue pendant l&lsquo;opération. Veuillez vérifier
+            vos informations
+          </p>
+        ) : null}
         <div className="w-full max-md:max-w-md flex flex-col items-start my-4">
           <label
             htmlFor="username"
@@ -45,29 +70,11 @@ const Register = () => {
             type="text"
             className="block min-h-[auto] w-full text-neutral-600 rounded-md border border-neutral-300 bg-white py-3 px-4 leading-[1.6] outline-none transition-all duration-200 ease-linear focus:border-purple-blue focus:ring-purple-blue focus:ring-2"
             id="username"
+            name="username"
             autoComplete="username"
             value={username}
             onChange={(e) => handleUsername(e.target.value)}
             placeholder="Username"
-            required
-          />
-        </div>
-
-        <div className="w-full max-md:max-w-md flex flex-col items-start my-4">
-          <label
-            htmlFor="email"
-            className="text-neutral-700 dark:text-neutral-300 font-medium pointer-events-none mb-2 truncate leading-none"
-          >
-            Email
-          </label>
-          <input
-            type="email"
-            className="block min-h-[auto] w-full text-neutral-600 rounded-md border border-neutral-300 bg-white py-3 px-4 leading-[1.6] outline-none transition-all duration-200 ease-linear focus:border-purple-blue focus:ring-purple-blue focus:ring-2"
-            id="email"
-            autoComplete="email"
-            value={email}
-            onChange={(e) => handleEmail(e.target.value)}
-            placeholder="Email"
             required
           />
         </div>
@@ -82,7 +89,8 @@ const Register = () => {
           <input
             type="password"
             className="block min-h-[auto] w-full text-neutral-600 rounded-md border border-neutral-300 bg-white py-3 px-4 leading-[1.6] outline-none transition-all duration-200 ease-linear focus:border-purple-blue focus:ring-purple-blue focus:ring-2"
-            id="password"
+            id="password1"
+            name="password1"
             autoComplete="password"
             value={password1}
             onChange={(e) => handlePassword1(e.target.value)}
@@ -101,7 +109,8 @@ const Register = () => {
           <input
             type="password"
             className="block min-h-[auto] w-full text-neutral-600 rounded-md border border-neutral-300 bg-white py-3 px-4 leading-[1.6] outline-none transition-all duration-200 ease-linear focus:border-purple-blue focus:ring-purple-blue focus:ring-2"
-            id="password"
+            id="password2"
+            name="password2"
             autoComplete="password"
             value={password2}
             onChange={(e) => handlePassword2(e.target.value)}
@@ -112,7 +121,8 @@ const Register = () => {
 
         <div className="w-full max-md:max-w-md mt-6">
           <button
-            type="submit"
+            type="button"
+            onClick={() => handleLogin()}
             className="!w-full bg-purple-blue border-none py-3 text-white"
           >
             Créer votre compte
