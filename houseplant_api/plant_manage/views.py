@@ -1,14 +1,14 @@
 from django.db import transaction
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import render
 from django.utils import timezone
-from rest_framework import mixins, status, viewsets
+from rest_framework import status, viewsets
 from rest_framework.authtoken.admin import User
-from rest_framework.generics import UpdateAPIView
+from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from plant_manage.models import Plant, Watering
-from plant_manage.serializers import PlantDetailSerializer, PlantListSerializer, WateringSerializer
+from plant_manage.serializers import PlantDetailSerializer, PlantListSerializer, WateringDetailSerializer, WateringSerializer
 
 # Create your views here.
 
@@ -16,11 +16,11 @@ from plant_manage.serializers import PlantDetailSerializer, PlantListSerializer,
 class PlantViewSet(viewsets.ModelViewSet):
 
     queryset = Plant.objects.all()
-    serializer_class = PlantDetailSerializer
+    serializer_class = PlantListSerializer
     filterset_fields = ['user', 'species']
     permission_classes = (IsAuthenticated, )
 
-    detail_serializer_class = PlantListSerializer
+    detail_serializer_class = PlantDetailSerializer
 
     def get_serializer_class(self):
         # Notre mixin détermine quel serializer à utiliser même si elle ne sait pas ce que c'est, ni comment l'utiliser
@@ -33,25 +33,15 @@ class PlantViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
 
-        # On attends d'abord que la nouvelle plante soit creer avec succes
-        # On recurpere l'instance de plante cree
-        data = Plant.objects.last()
+        # On crée la nouvelle plante
+        # On la recupere ensuite pour l'associe a un arrosage
+        data = serializer.save()
 
         # On calcul la duree prevue pour l'arrosage de cette plante en second
-        wait = serializer.data['watering_frequency']
-        splitaddr = wait.split(' ')
-        if len(splitaddr) == 2:
-            day = splitaddr[0]
-            hour = splitaddr[1]
-        else:
-            day = 0
-            hour = wait
+        wait = data.watering_frequency
 
-        h, m, s = hour.split(':')
-        wait_second = int(day) * 86400 + int(h) * 3600 + int(m) * 60 + int(s)
-
+        wait_second = wait.total_seconds()
         # On cree ensuite le premier rappel d'entretien de cette plante
         date_due = timezone.now() + timezone.timedelta(seconds=wait_second)
 
@@ -63,41 +53,53 @@ class PlantViewSet(viewsets.ModelViewSet):
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
     def list(self, request, *args, **kwargs):
-        queryset = Plant.objects.filter(user=request.user)
+        queryset = Plant.objects.filter(
+            user=request.user).order_by('date_purchase')
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
 
-class WateringViewSet(mixins.UpdateModelMixin, viewsets.GenericViewSet):
+class WateringViewSet(viewsets.ViewSet):
 
     queryset = Watering.objects.all()
     serializer_class = WateringSerializer
     permission_classes = (IsAuthenticated, )
 
     @transaction.atomic
-    def update(self, request, *args, **kwargs):
-        partial = kwargs.pop('partial', False)
-        instance = self.get_object()
-        serializer = self.get_serializer(
-            instance, data=request.data, partial=partial)
-        serializer.is_valid(raise_exception=True)
-        self.perform_update(serializer)
+    def list(self, request, *args, **kwargs):
+        # Recuperation des informations de l'utisateur courant
+        user = User.objects.get(username=request.user)
 
-        if getattr(instance, '_prefetched_objects_cache', None):
-            # If 'prefetch_related' has been applied to a queryset, we need to
-            # forcibly invalidate the prefetch cache on the instance.
-            instance._prefetched_objects_cache = {}
+        # Liste des arrosages effectuee et prevue pour cet utilisateur
+        queryset = Watering.objects.filter(
+            plant__user__id=user.id).order_by('plant')
 
-        # Si l'arrosage est pointe comme effectue on cree le prochain rappel
-        if serializer.data['is_valid'] is True:
-            # On recurpere l'instance de plante associe
-            data = Plant.objects.get(code=serializer.data['plant'])
-
-            # On definie la date prevue pour l'arrosage de cette plante
-            date_due = timezone.now() + data.watering_frequency
-
-            # Creation du premier point d'arrosage
-            Watering.objects.create(
-                is_valid=False, date_planned=date_due, plant=data)
-
+        # Serialisation et retour vers l'utilisateur
+        serializer = WateringDetailSerializer(queryset, many=True)
         return Response(serializer.data)
+
+    @transaction.atomic
+    @action(detail=False, methods=['post'])
+    def check_watering(self, request):
+        # On recurpere l'instance de plante associe
+        plant = Plant.objects.get(code=request.data['plant'])
+
+        # On recurpere l'instance du prochain arrosage de cette plante
+        queryset = Watering.objects.filter(is_valid=False, plant=plant).first()
+
+        if not queryset:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        queryset.is_valid = True
+        queryset.date_completion = timezone.now()
+        queryset.save()
+
+        # On definie ensuite la date prevue pour le prochain arrosage de cette plante
+        date_due = queryset.date_completion + plant.watering_frequency
+
+        # Creation du prochain point d'arrosage
+        data = Watering.objects.create(
+            is_valid=False, date_planned=date_due, plant=plant)
+
+        serializer = WateringSerializer(data)
+        return Response(serializer.data, status=status.HTTP_200_OK)

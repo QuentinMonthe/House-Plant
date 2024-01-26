@@ -24,14 +24,10 @@ class Plant(models.Model):
         verbose_name = _("Plant")
         verbose_name_plural = _("Plants")
 
-    def __str__(self):
-        return self.code
-
     # Un atribut permettant d'identifier directement le date du prochain entretien de la plantem sans besoinde consulter son detail
     @property
     def next_watering(self):
-        queryset = Watering.objects.filter(plant=self, is_valid=False).first()
-        print(queryset.date_planned)
+        queryset = Watering.objects.get(plant=self, is_valid=False)
         return queryset.date_planned
 
 
@@ -49,5 +45,3 @@ class Watering(models.Model):
         verbose_name = _("Watering")
         verbose_name_plural = _("Waterings")
 
-    def __str__(self):
-        return self.code
