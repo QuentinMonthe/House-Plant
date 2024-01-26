@@ -19,7 +19,7 @@ L'ensemble des packages utilisés sont référencé dans le fichier `requirement
 
 - SE : Ubuntu 22.04.2 LTS
 - IDE : VS Code
-- Bqse de donnée : SQL Lite
+- Base de donnée : SQL Lite
 - Langage : Python 3.10.12
 - Framework : Django Rest Framework
 
