@@ -20,15 +20,13 @@ L'ensemble des dépendances utilisés sont référencé dans le fichier `package
 - SE : Ubuntu 22.04.2 LTS
 - IDE : VS Code
 - Base de donnée : SQL Lite
-- Langage : Python 3.10.12
-- Framework : Django Rest Framework
+- Langage : Python, JavaScript, HTML, CSS
+- Framework : Django Rest Framework, Vite + React
 - Gestionnaire de donnée : Redux + Local storage
-- Langage : JavaScript
-- Framework : Vite + React
 
 ### Instructions
 
-Le projet est repqrtie en deux dossier contenant respective le code source du frontend et de l'API backend
+Le projet est repartie en deux dossier contenant respective le code source du frontend et de l'API backend
 
 - houseplant_ui
 - houseplant_api
@@ -36,6 +34,15 @@ Le projet est repqrtie en deux dossier contenant respective le code source du fr
 ### Démarrage
 
 Les instructions nécessaires au démarrage de l'application sont contenu dans les README de chaque dossier.
+
+## Fonctionnalités implémenter
+
+- `Authentification utilisateur` : Les utilisateurs peuvent créer un compte et se connecter à l'application, avec un contrôle d'accès aux données
+- `Ajout de plantes` : Les utilisateurs peuvent ajouter des plantes avec des informations telles que le nom, l'espèce, la date d'achat et une image.
+- `Gestion des besoins en eau` : Les utilisateurs peuvent définir les besoins en eau de chaque plante, par exemple la quantité d'eau et la fréquence d'arrosage.
+- `Notifications et rappels` : Les utilisateurs disposent des rappels pour arroser leurs plantes en fonction des besoins définis.
+- `Arrosage de la plante` : Les utilisateurs peuvent marquer l'arrosage d'une de leur plante dans l'application.
+- `Historique d'arrosage` : Les utilisateurs peuvent consulter l'historique d'arrosage de leurs plantes pour suivre leur entretien.
 
 ## Contributeur
 
