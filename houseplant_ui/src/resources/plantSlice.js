@@ -1,5 +1,10 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { addPlant, getPlant, watering } from "../services/plant.services";
+import {
+  addPlant,
+  deletePlant,
+  getPlant,
+  watering,
+} from "../services/plant.services";
 
 const plantSlice = createSlice({
   name: "plant",
@@ -53,6 +58,19 @@ const plantSlice = createSlice({
         state.success = true;
       })
       .addCase(watering.rejected, (state, { payload }) => {
+        state.loading = false;
+        state.error = payload;
+      })
+      .addCase(deletePlant.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(deletePlant.fulfilled, (state) => {
+        state.loading = false;
+        state.update = "reload";
+        state.success = true;
+      })
+      .addCase(deletePlant.rejected, (state, { payload }) => {
         state.loading = false;
         state.error = payload;
       });

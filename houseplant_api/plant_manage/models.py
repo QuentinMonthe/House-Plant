@@ -16,7 +16,7 @@ class Plant(models.Model):
     date_purchase = models.DateField(blank=True)
     image = models.ImageField(upload_to='images/', null=True)
     watering_frequency = models.DurationField()
-    water_requirement = models.DecimalField(max_digits=5, decimal_places=3)
+    water_requirement = models.DecimalField(max_digits=4, decimal_places=2)
     user = models.ForeignKey(User, verbose_name=_("owner plant"),
                              on_delete=models.CASCADE)
 
@@ -38,10 +38,11 @@ class Watering(models.Model):
     is_valid = models.BooleanField(default=False)
     date_planned = models.DateTimeField(blank=True)
     date_completion = models.DateTimeField(null=True, blank=True)
+    quantity_water = models.DecimalField(
+        max_digits=4, decimal_places=2, default=0)
     plant = models.ForeignKey(
         "plant_manage.Plant", on_delete=models.CASCADE, related_name='watering_history')
 
     class Meta:
         verbose_name = _("Watering")
         verbose_name_plural = _("Waterings")
-

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { closeModal } from "../resources/modalSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { addPlant } from "../services/plant.services";
+import { CgClose } from "react-icons/cg";
 
 const Modal = () => {
   const dispatch = useDispatch();
@@ -44,16 +45,27 @@ const Modal = () => {
 
   const handleAddPlant = () => {
     let value = wateringFrequency1 * 86400 + wateringFrequency2 * 3600;
-    const formData = new FormData();
-    formData.append("image", image);
-    formData.append("name", name);
-    formData.append("species", species);
-    formData.append("date_purchase", datePurchase);
-    formData.append("watering_frequency", value);
-    formData.append("water_requirement", waterRequirement);
-    formData.append("user", userInfo.pk);
 
-    dispatch(addPlant({ data: formData, accessToken: accessToken }));
+    if (name && species && datePurchase && waterRequirement > 0 && value > 0) {
+      const formData = new FormData();
+      formData.append("image", image);
+      formData.append("name", name);
+      formData.append("species", species);
+      formData.append("date_purchase", datePurchase);
+      formData.append("watering_frequency", value);
+      formData.append("water_requirement", waterRequirement);
+      formData.append("user", userInfo.pk);
+
+      setName("");
+      setSpecies("");
+      setDatePurchase("");
+      setWaterRequirement(0);
+      setWateringFrequency1(0);
+      setWateringFrequency2(0);
+      setImage(null);
+
+      dispatch(addPlant({ data: formData, accessToken: accessToken }));
+    }
   };
 
   useEffect(() => {
@@ -75,21 +87,17 @@ const Modal = () => {
             <p className="text-2xl font-bold">Ajouter une nouvelle plante</p>
             <div
               onClick={() => handleModal()}
-              className="modal-close cursor-pointer z-50"
+              className="modal-close cursor-pointer z-50 text-2xl"
             >
-              <svg
-                className="fill-current text-black dark:text-white"
-                xmlns="http://www.w3.org/2000/svg"
-                width="18"
-                height="18"
-                viewBox="0 0 18 18"
-              >
-                <path d="M14.53 4.53l-1.06-1.06L9 7.94 4.53 3.47 3.47 4.53 7.94 9l-4.47 4.47 1.06 1.06L9 10.06l4.47 4.47 1.06-1.06L10.06 9z"></path>
-              </svg>
+              <CgClose />
             </div>
           </div>
 
-          <form id="new-plant-form" className="">
+          <form
+            onSubmit={() => handleAddPlant()}
+            id="new-plant-form"
+            className=""
+          >
             {/* Body */}
             <div className="my-5">
               <div className="w-full max-md:max-w-md flex flex-col items-start my-4">
@@ -117,7 +125,7 @@ const Modal = () => {
                   htmlFor="species"
                   className="text-neutral-700 dark:text-neutral-300 font-medium pointer-events-none mb-2 truncate leading-none"
                 >
-                  Espèce
+                  Espèce <span className="text-red-600">*</span>
                 </label>
                 <input
                   type="text"
@@ -128,6 +136,7 @@ const Modal = () => {
                   value={species}
                   onChange={(e) => handleSpecies(e.target.value)}
                   placeholder="Espèce"
+                  required
                 />
               </div>
 
@@ -235,16 +244,15 @@ const Modal = () => {
             {/* Footer */}
             <div className="flex justify-end pt-2">
               <button
-                type="button"
+                type="reset"
                 onClick={() => handleModal()}
-                className="focus:outline-none px-4 bg-gray-500 !border-none hover!border-transparent p-3 rounded-lg text-black"
+                className="focus:outline-none px-4 bg-gray-500 hover:!border-gray-500t p-3 rounded-lg !text-black"
               >
                 Cancel
               </button>
               <button
-                type="button"
-                onClick={() => handleAddPlant()}
-                className="focus:outline-none px-4 bg-purple-blue hover:!border-none hover!border-transparent p-3 ml-3 rounded-lg text-white "
+                type="submit"
+                className="focus:outline-none px-4 bg-purple-blue hover!border-purple-blue p-3 ml-3 rounded-lg !text-white "
               >
                 Confirm
               </button>

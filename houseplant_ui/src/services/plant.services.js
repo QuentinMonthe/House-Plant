@@ -91,3 +91,33 @@ export const watering = createAsyncThunk(
     }
   }
 );
+
+// Pointage de l'arrosage d'une plante
+export const deletePlant = createAsyncThunk(
+  "plant/deletePlant",
+  async ({ accessToken, code }, { rejectWithValue }) => {
+    try {
+      const config = {
+        method: "delete",
+        maxBodyLength: Infinity,
+        url: `${API_URL}/plant/${code}`,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + accessToken,
+        },
+        data: "",
+      };
+
+      await axios.request(config);
+
+      return;
+    } catch (error) {
+      // return custom error message from backend if present
+      if (error.response && error.response.status) {
+        return rejectWithValue(error.response.status);
+      } else {
+        return rejectWithValue(error.message);
+      }
+    }
+  }
+);

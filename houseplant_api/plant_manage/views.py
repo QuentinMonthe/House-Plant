@@ -91,6 +91,7 @@ class WateringViewSet(viewsets.ViewSet):
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
         queryset.is_valid = True
+        queryset.quantity_water = request.data['quantity_water']
         queryset.date_completion = timezone.now()
         queryset.save()
 

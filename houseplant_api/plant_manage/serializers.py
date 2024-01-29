@@ -25,7 +25,7 @@ class WateringDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Watering
         fields = ('code', 'is_valid', 'date_planned',
-                  'date_completion', 'plant')
+                  'date_completion', 'quantity_water', 'plant')
 
 
 class PlantDetailSerializer(serializers.ModelSerializer):

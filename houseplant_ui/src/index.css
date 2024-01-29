@@ -17,7 +17,7 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-a {
+a, button {
   font-weight: 500;
   color: #646cff;
   text-decoration: inherit;
@@ -91,7 +91,7 @@ button:focus-visible {
     color: #213547;
     background-color: #F4F2EE;
   }
-  a:hover {
+  a:hover, button:hover {
     color: #747bff;
   }
   button {

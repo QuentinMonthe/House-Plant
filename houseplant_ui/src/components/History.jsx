@@ -30,27 +30,33 @@ const History = () => {
                 <tr>
                   <th
                     scope="col"
-                    className="text-sm font-medium text-gray-900 px-6 py-4 text-left"
+                    className="text-sm font-medium text-gray-900 px-6 py-4 text-center"
                   >
                     Code
                   </th>
                   <th
                     scope="col"
-                    className="text-sm font-medium text-gray-900 px-6 py-4 text-left"
+                    className="text-sm font-medium text-gray-900 px-6 py-4 text-center"
                   >
                     Nom
                   </th>
                   <th
                     scope="col"
-                    className="text-sm font-medium text-gray-900 px-6 py-4 text-left"
+                    className="text-sm font-medium text-gray-900 px-6 py-4 text-center"
                   >
                     Arrosage prévu
                   </th>
                   <th
                     scope="col"
-                    className="text-sm font-medium text-gray-900 px-6 py-4 text-left"
+                    className="text-sm font-medium text-gray-900 px-6 py-4 text-center"
                   >
                     Arrosage réel
+                  </th>
+                  <th
+                    scope="col"
+                    className="text-sm font-medium text-gray-900 px-6 py-4 text-center"
+                  >
+                    Quantité d&apos;eau utilisé
                   </th>
                 </tr>
               </thead>
@@ -60,19 +66,22 @@ const History = () => {
                     key={item.code}
                     className="bg-white border-b transition duration-300 ease-in-out hover:bg-gray-100"
                   >
-                    <td className="px-6 py-4 text-left whitespace-nowrap text-sm font-medium text-gray-900">
+                    <td className="px-6 py-4 text-center max-w-[4rem] truncate whitespace-nowrap text-sm font-medium text-gray-900">
                       {item.plant.code}
                     </td>
-                    <td className="text-sm text-left text-gray-900 font-light px-6 py-4 whitespace-nowrap">
+                    <td className="text-sm text-center text-gray-900 font-light px-6 py-4 whitespace-nowrap">
                       {item.plant.name}
                     </td>
-                    <td className="text-sm text-left text-gray-900 font-light px-6 py-4 whitespace-nowrap">
+                    <td className="text-sm text-center text-gray-900 font-light px-6 py-4 whitespace-nowrap">
                       {new Date(item.date_planned).toLocaleString()}
                     </td>
-                    <td className="text-sm text-left text-gray-900 font-light px-6 py-4 whitespace-nowrap">
+                    <td className="text-sm text-center text-gray-900 font-light px-6 py-4 whitespace-nowrap">
                       {item.date_completion
                         ? new Date(item.date_completion).toLocaleString()
                         : "-/-"}
+                    </td>
+                    <td className="text-sm text-center text-gray-900 font-light px-6 py-4 whitespace-nowrap">
+                      {item.quantity_water}
                     </td>
                   </tr>
                 ))}

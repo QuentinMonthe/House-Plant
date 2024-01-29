@@ -46,7 +46,7 @@ const Navigation = () => {
       <div className="p-2">
         <h2>House&apos;s {userInfo.username}</h2>
       </div>
-      <ul className="md:ml-auto flex flex-wrap gap-1">
+      <ul className="md:ml-auto py-2 lg:py-1 flex flex-wrap gap-1">
         <NavLink
           to="/home#plant"
           className="nav-link"
